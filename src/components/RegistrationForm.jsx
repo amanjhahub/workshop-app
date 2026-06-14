@@ -27,11 +27,11 @@ toast.error("Please enter a valid email address.");
 }
     setLoading(true);
 
-    axios.post("http://localhost:5000/api/enquiry", {
-      name,
-      email,
-      phone
-    })
+    axios.post("/api/enquiry", {
+  name,
+  email,
+  phone
+})
     .then((response) => {
       setLoading(false);
   console.log(response.data);
