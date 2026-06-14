@@ -1,5 +1,8 @@
-require("dotenv").config();
-
+const path = require("path");
+require("dotenv").config({ path: path.resolve(__dirname, ".env") });
+console.log("ENV FILE CHECK");
+console.log("MONGO_URI =", process.env.MONGO_URI);
+console.log("ENV KEYS:", Object.keys(process.env));
 const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
@@ -11,7 +14,7 @@ const app = express();
 // Middleware
 app.use(cors());
 app.use(express.json());
-
+console.log("MONGO_URI:", process.env.MONGO_URI);
 // 🔥 MongoDB Connection
 mongoose.connect(process.env.MONGO_URI)
   .then(() => {
