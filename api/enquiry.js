@@ -1,6 +1,14 @@
 import mongoose from "mongoose";
 
-// ✅ SAFE MODEL IMPORT (CommonJS support fix)
+// MongoDB connection (ADD THIS)
+const connectDB = async () => {
+  if (mongoose.connection.readyState >= 1) return;
+
+  await mongoose.connect(process.env.MONGO_URI);
+  console.log("MongoDB Connected");
+};
+
+// Model
 const Enquiry =
   mongoose.models.Enquiry ||
   mongoose.model(
@@ -15,24 +23,14 @@ const Enquiry =
     )
   );
 
-// ✅ Prevent multiple DB connections (VERY IMPORTANT)
-let isConnected = false;
-
-async function connectDB() {
-  if (isConnected) return;
-
-  await mongoose.connect(process.env.MONGO_URI);
-  isConnected = true;
-  console.log("MongoDB Connected");
-}
-
+// API handler
 export default async function handler(req, res) {
   try {
     if (req.method !== "POST") {
       return res.status(405).json({ message: "Only POST allowed" });
     }
 
-    await connectDB();
+    await connectDB(); // ✅ NOW THIS WORKS
 
     const { name, email, phone } = req.body;
 
