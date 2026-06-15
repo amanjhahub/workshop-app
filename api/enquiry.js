@@ -105,6 +105,43 @@ export default async function handler(req, res) {
         data
       });
     }
+    if (req.method === "DELETE") {
+      const { id } = req.query;
+
+      if (!id) {
+        return res.status(400).json({
+          success: false,
+          message: "ID is required"
+        });
+      }
+
+      const deleted = await Enquiry.findByIdAndDelete(id);
+
+      return res.status(200).json({
+        success: true,
+        message: "Deleted successfully",
+        deleted
+      });
+    }
+        // DELETE → remove enquiry
+    if (req.method === "DELETE") {
+      const { id } = req.query;
+
+      if (!id) {
+        return res.status(400).json({
+          success: false,
+          message: "ID is required"
+        });
+      }
+
+      const deleted = await Enquiry.findByIdAndDelete(id);
+
+      return res.status(200).json({
+        success: true,
+        message: "Deleted successfully",
+        deleted
+      });
+    }
 
     return res.status(405).json({ message: "Method not allowed" });
 
