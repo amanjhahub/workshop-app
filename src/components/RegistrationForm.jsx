@@ -11,6 +11,10 @@ function RegistrationForm() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // #region agent log
+    fetch('http://127.0.0.1:7286/ingest/63d9a51f-c999-40b7-a920-6d161500def8',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'89d76c'},body:JSON.stringify({sessionId:'89d76c',location:'RegistrationForm.jsx:handleSubmit:entry',message:'Form submit started',data:{hasName:!!name,hasEmail:!!email,phoneLen:phone?.length},timestamp:Date.now(),hypothesisId:'E'})}).catch(()=>{});
+    // #endregion
+
     if (!name || !email || !phone) {
       toast.error("All fields are required");
       return;
@@ -32,11 +36,19 @@ function RegistrationForm() {
     try {
       setLoading(true);
 
+      // #region agent log
+      fetch('http://127.0.0.1:7286/ingest/63d9a51f-c999-40b7-a920-6d161500def8',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'89d76c'},body:JSON.stringify({sessionId:'89d76c',location:'RegistrationForm.jsx:handleSubmit:pre-request',message:'Validation passed, sending POST',data:{url:'/api/enquiry'},timestamp:Date.now(),hypothesisId:'E'})}).catch(()=>{});
+      // #endregion
+
       const response = await axios.post("/api/enquiry", {
         name,
         email,
         phone,
       });
+
+      // #region agent log
+      fetch('http://127.0.0.1:7286/ingest/63d9a51f-c999-40b7-a920-6d161500def8',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'89d76c'},body:JSON.stringify({sessionId:'89d76c',location:'RegistrationForm.jsx:handleSubmit:success',message:'API response received',data:{status:response?.status,success:response?.data?.success,contentType:response?.headers?.['content-type']},timestamp:Date.now(),hypothesisId:'B'})}).catch(()=>{});
+      // #endregion
 
       toast.success("Registration successful! We'll contact you soon.");
 
@@ -45,6 +57,11 @@ function RegistrationForm() {
       setPhone("");
     } catch (error) {
       console.error("Submission error:", error?.response?.data || error.message);
+      // #region agent log
+      const respData = error?.response?.data;
+      const dataPreview = typeof respData === 'string' ? respData.slice(0,80) : respData;
+      fetch('http://127.0.0.1:7286/ingest/63d9a51f-c999-40b7-a920-6d161500def8',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'89d76c'},body:JSON.stringify({sessionId:'89d76c',location:'RegistrationForm.jsx:handleSubmit:error',message:'API request failed',data:{status:error?.response?.status,contentType:error?.response?.headers?.['content-type'],dataPreview,errMessage:error?.message},timestamp:Date.now(),hypothesisId:'A,B,C'})}).catch(()=>{});
+      // #endregion
       const errMsg = error?.response?.data?.error || error?.response?.data?.message || "Failed to submit form. Try again.";
       toast.error(errMsg);
     } finally {
