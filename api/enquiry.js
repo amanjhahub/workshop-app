@@ -1,18 +1,30 @@
 import mongoose from "mongoose";
 
-// 👇 FIX: safe CommonJS import inside ES module
-import EnquiryModule from "../models/Enquiry.js";
-const Enquiry = EnquiryModule || EnquiryModule.default;
+// ✅ SAFE MODEL IMPORT (CommonJS support fix)
+const Enquiry =
+  mongoose.models.Enquiry ||
+  mongoose.model(
+    "Enquiry",
+    new mongoose.Schema(
+      {
+        name: String,
+        email: String,
+        phone: String
+      },
+      { timestamps: true }
+    )
+  );
 
+// ✅ Prevent multiple DB connections (VERY IMPORTANT)
 let isConnected = false;
 
-const connectDB = async () => {
+async function connectDB() {
   if (isConnected) return;
 
   await mongoose.connect(process.env.MONGO_URI);
   isConnected = true;
   console.log("MongoDB Connected");
-};
+}
 
 export default async function handler(req, res) {
   try {
@@ -24,12 +36,12 @@ export default async function handler(req, res) {
 
     const { name, email, phone } = req.body;
 
-    console.log("🔥 Request received:", req.body);
+    console.log("🔥 Request:", req.body);
 
     if (!name || !email || !phone) {
       return res.status(400).json({
         success: false,
-        message: "All fields are required"
+        message: "All fields required"
       });
     }
 
@@ -41,7 +53,7 @@ export default async function handler(req, res) {
     });
 
   } catch (err) {
-    console.log("❌ ERROR:", err.message);
+    console.log("❌ ERROR:", err);
 
     return res.status(500).json({
       success: false,
