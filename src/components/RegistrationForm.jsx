@@ -38,16 +38,15 @@ function RegistrationForm() {
         phone,
       });
 
-      toast.success(
-        response.data.message || "Registration successful"
-      );
+      toast.success("Registration successful! We'll contact you soon.");
 
       setName("");
       setEmail("");
       setPhone("");
     } catch (error) {
-      console.error(error);
-      toast.error("Failed to submit form. Try again.");
+      console.error("Submission error:", error?.response?.data || error.message);
+      const errMsg = error?.response?.data?.error || error?.response?.data?.message || "Failed to submit form. Try again.";
+      toast.error(errMsg);
     } finally {
       setLoading(false);
     }
